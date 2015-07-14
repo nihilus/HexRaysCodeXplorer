@@ -1,9 +1,13 @@
-<pre>  _  _         ___               ___         _    __  __     _                 
- | || |_____ _| _ \__ _ _  _ ___/ __|___  __| |___\ \/ /_ __| |___ _ _ ___ _ _ 
- | __ / -_) \ /   / _` | || (_-< (__/ _ \/ _` / -_)>  <| '_ \ / _ \ '_/ -_) '_|
- |_||_\___/_\_\_|_\__,_|\_, /__/\___\___/\__,_\___/_/\_\ .__/_\___/_| \___|_|  
-                        |__/                           |_|                     </pre>
-===============================================================================
+<pre>
+ _   _          ______                _____           _     __   __      _                     
+| | | |         | ___ \              /  __ \         | |    \ \ / /     | |                    
+| |_| | _____  _| |_/ /__ _ _   _ ___| /  \/ ___   __| | ___ \ V / _ __ | | ___  _ __ ___ _ __ 
+|  _  |/ _ \ \/ /    // _` | | | / __| |    / _ \ / _` |/ _ \/   \| '_ \| |/ _ \| '__/ _ \ '__|
+| | | |  __/>  <| |\ \ (_| | |_| \__ \ \__/\ (_) | (_| |  __/ /^\ \ |_) | | (_) | | |  __/ |   
+\_| |_/\___/_/\_\_| \_\__,_|\__, |___/\____/\___/ \__,_|\___\/   \/ .__/|_|\___/|_|  \___|_|   
+                             __/ |                                | |                          
+                            |___/                                 |_|</pre>
+============================================================================
 
 Hex-Rays Decompiler plugin for better code navigation in RE process of C++ applications or code reconstruction of modern malware as Stuxnet, Flame, Equation ... :octocat:
 
@@ -25,6 +29,10 @@ __Here are the main features of the plugin:__
 Also CodeXplorer plugin supports auto REconstruction type into IDA local types storage.
 
 ![6](img/6.png)
+
+* ***Virtual function table identification***  - automatically identifies references to virtual function tables during type reconstruction. When a reference to a virtual function table is identified the plugin generates a corresponding C-structure. As shown below during reconstructing `struct_local_data_storage` two virtual function tables were identified and, as a result, two corresponding structures were generated: `struct_local_data_storage_VTABLE_0` and `struct_local_data_storage_VTABLE_4`.
+
+![12](img/12.png)
   
 * ***C-tree graph visualization*** – a special tree-like structure representing a decompiled routine in citem_t terms (hexrays.hpp). Useful feature for understanding how the decompiler works. The highlighted graph node corresponds to the current cursor position in the HexRays Pseudocode window:
 
@@ -59,7 +67,8 @@ __Object Explorer supports folowing features:__
 
 __Conference talks about CodeXplorer plugin:__
 * **2015**
- * "Object Oriented Code RE with HexraysCodeXplorer", NSEC [[slides]]()
+ * "Distributing the REconstruction of High-Level IR for Large Scale Malware Analysis", BHUS [slides] 
+ * "Object Oriented Code RE with HexraysCodeXplorer", NSEC [[slides]](https://github.com/REhints/Publications/raw/master/Conferences/Nsec'2015/nsec_2015.pdf)
 * **2014**
  * "HexRaysCodeXplorer: object oriented RE for fun and profit", H2HC [[slides]](https://github.com/REhints/Publications/blob/master/Conferences/ZeroNights'2013/ZN_2013_pdf.pdf)
 * **2013**
