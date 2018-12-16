@@ -28,39 +28,38 @@
 
 #include "Debug.h"
 
-#ifdef __LINUX__
+#if defined (__LINUX__) || defined (__MAC__)
 #include "Linux.h"
 #endif
 
-bool isMSVC()
+bool compilerIs(const char *name)
 {
 	comp_t vc = default_compiler();
 	//qstring comp = get_compiler_name(vc); //fullname
 	qstring comp = get_compiler_abbr(vc);
-	
-	if (comp == "vc")
+
+	if (comp == name)
 		return true;
 	return false;
 }
 
-bool idaapi show_string_in_custom_view(void *ud, qstring title, qstring str)
+bool idaapi show_string_in_custom_view(void *ud, const qstring& title, const qstring& str)
 {
-	HWND hwnd(NULL);
-	TForm *form = create_tform(title.c_str(), &hwnd);
-	string_view_form_info_t *si = new string_view_form_info_t(form);
+	TWidget *widget = create_empty_widget(title.c_str());
+	string_view_form_info_t *si = new string_view_form_info_t(widget);
 	si->sv.push_back(simpleline_t(str));
 
-	simpleline_place_t s1(NULL);
-	simpleline_place_t s2(si->sv.size());
-	si->cv = create_custom_viewer(title.c_str(), NULL, &s1, &s2, &s1, NULL, &si->sv);
-	si->codeview = create_code_viewer(form, si->cv, CDVF_NOLINES);
-	set_custom_viewer_handlers(si->cv, NULL, si);
-	open_tform(form, FORM_ONTOP | FORM_RESTORE);
+	simpleline_place_t s1;
+	simpleline_place_t s2(static_cast<int>(si->sv.size()));
+	si->cv = create_custom_viewer((title + "_").c_str(), &s1, &s2, &s1, nullptr, &si->sv, nullptr, nullptr, widget);
+	si->codeview = create_code_viewer(si->cv, CDVF_NOLINES, widget);
+	set_custom_viewer_handlers(si->cv, nullptr, si);
+	display_widget(widget, WOPN_ONTOP | WOPN_RESTORE);
 
 	return false;
 }
 
-void split_qstring(qstring &options, qstring &splitter, qvector<qstring> &result) {
+void split_qstring(const qstring &options, const qstring &splitter, qvector<qstring> &result) {
 	size_t start_pos = 0;
 
 	do {
@@ -130,7 +129,7 @@ int SHA1Result(SHA1Context *context, uint8_t Message_Digest[SHA1HashSize])
 	return shaSuccess;
 }
 
-int SHA1Input(SHA1Context *context, const uint8_t *message_array, unsigned length)
+int SHA1Input(SHA1Context *context, const uint8_t *message_array, unsigned int length)
 {
 	if (!length)
 	{
@@ -285,4 +284,62 @@ void SHA1MessageDigestToString(uint8_t Message_Digest[SHA1HashSize], char outbuf
 		outbuffer[i * 2] = int_to_hex(Message_Digest[i] >> 4);
 		outbuffer[i * 2 + 1] = int_to_hex(Message_Digest[i] & 0xF);
 	}
+}
+
+void idaapi setUnknown(ea_t ea, asize_t size)
+{
+	// TODO: Does the overrun problem still exist?
+	//do_unknown_range(ea, (size_t)size, DOUNK_SIMPLE);
+	while (size > 0)
+	{
+		asize_t isize = get_item_size(ea);
+		if (isize > size)
+			break;
+
+		del_items(ea);
+		ea += (ea_t)isize;
+		size -= isize;
+	};
+}
+
+
+void MakeName(ea_t ea, const qstring& name, const qstring& prefix, const qstring& postfix)
+{
+	qstring g_name(prefix);
+	g_name += name;
+	g_name += postfix;
+
+	g_name.replace(" ", "_");
+	g_name.replace("*", "_");
+	g_name.replace(",", "_");
+	g_name.replace("<", "_lt");
+	g_name.replace(">", "_ge");
+	set_name(ea, g_name.c_str(), SN_NOWARN);
+}
+
+bool MakeArray(ea_t ea, size_t nitems)
+{
+	asize_t itemsize = 0;
+	tid_t tid = BADADDR;
+	flags_t flags = get_flags(ea);
+	if (is_code(flags) || is_tail(flags) || is_align(flags))
+		return false;
+
+	if (is_unknown(flags))
+		flags = 0;
+
+	if (is_struct(flags))
+	{
+		opinfo_t ti;
+		if (!get_opinfo(&ti, ea, 0, flags))
+			return false;
+		itemsize = get_data_elsize(ea, flags, &ti);
+		tid = ti.tid;
+	}
+	else
+	{
+		itemsize = get_item_size(ea);
+	}
+
+	return create_data(ea, flags, static_cast<asize_t>(itemsize * nitems), tid);
 }

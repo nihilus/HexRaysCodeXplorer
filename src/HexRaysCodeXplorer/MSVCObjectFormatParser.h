@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #pragma once 
+#include "IObjectFormatParser.h"
 #include "Common.h"
-
 
 //////////////////////////////////////////////////////////////////////////
 //
@@ -40,7 +40,7 @@ namespace vftable
 	struct vtinfo
 	{
 		ea_t start, end;
-		int  methodCount;
+		asize_t methodCount;
 		qstring type_info;
 	};
 
@@ -64,7 +64,7 @@ namespace RTTI
 
 		static bool isValid(ea_t typeInfo);
 		static bool isTypeName(ea_t name);
-		static int  getName(ea_t typeInfo, OUT LPSTR bufffer, int bufferSize);
+		static bool getName(ea_t typeInfo, qstring& outName);
 
 	};
 	const UINT MIN_TYPE_INFO_SIZE = (offsetof(type_info, _M_d_name) + sizeof(".?AVx"));
@@ -102,7 +102,7 @@ namespace RTTI
 									// 18 When attributes & BCD_HASPCHD
 									//_RTTIClassHierarchyDescriptor *classDescriptor; *X64 int32 offset
 
-		static bool isValid(ea_t bcd, ea_t colBase64 = NULL);
+		static bool isValid(ea_t bcd, ea_t colBase64 = 0);
 
 	};
 
@@ -123,7 +123,7 @@ namespace RTTI
 		UINT baseClassArray;    // 0C *X64 int32 offset to _RTTIBaseClassArray*
 #endif
 
-		static bool isValid(ea_t chd, ea_t colBase64 = NULL);
+		static bool isValid(ea_t chd, ea_t colBase64 = 0);
 
 	};
 
@@ -144,8 +144,8 @@ namespace RTTI
 #endif
 
 
-		static BOOL isValid(ea_t col);
-		static BOOL isValid2(ea_t col);
+		static bool isValid(ea_t col);
+		static bool isValid2(ea_t col);
 
 	};
 #pragma pack(pop)
@@ -154,23 +154,29 @@ namespace RTTI
 
 	void freeWorkingData();
 
-	BOOL processVftable(ea_t vft, ea_t col, vftable::vtinfo &vi);
+	bool processVftable(ea_t vft, ea_t col, vftable::vtinfo &vi);
 }
 
 
 extern void fixEa(ea_t ea);
 extern void fixDword(ea_t eaAddress);
 extern void fixFunction(ea_t eaFunc);
-extern void idaapi setUnknown(ea_t ea, int size);
+extern void idaapi setUnknown(ea_t ea, asize_t size);
 extern bool getVerifyEa(ea_t ea, ea_t &rValue);
 extern BOOL hasAnteriorComment(ea_t ea);
 extern void killAnteriorComments(ea_t ea);
 
-extern BOOL getPlainTypeName(IN LPCSTR mangled, LPSTR outStr);
+extern bool getPlainTypeName(const qstring& mangled, qstring& outStr);
 
 extern BOOL optionOverwriteComments, optionPlaceStructs;
 
-void idaapi getRttiData();
+class MSVCObjectFormatParser :
+	public IObjectFormatParser
+{
+public:
+	virtual ~MSVCObjectFormatParser();
 
-
+	virtual void getRttiInfo();
+	virtual void clearInfo();
+};
 

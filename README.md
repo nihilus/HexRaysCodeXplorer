@@ -9,6 +9,12 @@
                             |___/                                 |_|</pre>
 ============================================================================
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![Code Climate](https://codeclimate.com/github/REhints/HexRaysCodeXplorer/badges/gpa.svg)](https://codeclimate.com/github/REhints/HexRaysCodeXplorer)
+[![Issue Count](https://codeclimate.com/github/REhints/HexRaysCodeXplorer/badges/issue_count.svg)](https://codeclimate.com/github/REhints/HexRaysCodeXplorer)
+[![Join the chat at https://gitter.im/REhints/HexRaysCodeXplorer](https://badges.gitter.im/REhints/HexRaysCodeXplorer.svg)](https://gitter.im/REhints/HexRaysCodeXplorer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Codewake](https://www.codewake.com/badges/ask_question.svg)](https://www.codewake.com/p/hexrayscodexplorer)
+
 The Hex-Rays Decompiler plugin for better code navigation in RE process. CodeXplorer automates code REconstruction of C++ applications or modern malware like Stuxnet, Flame, Equation, Animal Farm ... :octocat:
 
 The CodeXplorer plugin is one of the [first publicly available](https://www.hex-rays.com/products/decompiler/manual/third_party.shtml) Hex-Rays Decompiler plugins. We keep updated this project [since summer of 2013](https://www.hex-rays.com/contests/2013/) and continue contributing new features frequently. Also most interesting feutures of CodeXplorer have been presented on numerous security conferences like: REcon, ZeroNights, H2HC, NSEC and BHUS :space_invader:
@@ -98,6 +104,26 @@ __The Batch mode contains following features:__
 Example (dump types and ctrees for functions with name prefix "crypto_"):
 idaq.exe -OHexRaysCodeXplorer:dump_types:dump_ctrees:CRYPTOcrypto_path_to_idb
 ```
+
+__Compiling__:
+
+***Windows:*** 
+* Open the solution in Visual Studio
+* Open file `src/HexRaysCodeXplorer/PropertySheet.props` in notepad(++) and update values of `IDADIR` and `IDASDK` paths to point to IDA installation path and IDA7 SDK path accordingly. HexRays SDK should be in `$IDADIR\plugins\hexrays_sdk` (like by default)
+* Build `Release | x64` and `Release x64 | x64` configurations
+
+***Linux***:
+* cd src/HexRaysCodeXplorer/
+* IDA_DIR=<PATH_TO_IDA> IDA_SDK=<PATH_TO_IDA_SDK> EA64=0 make -f makefile.lnx
+* IDA_DIR=<PATH_TO_IDA> IDA_SDK=<PATH_TO_IDA_SDK> EA64=0 make -f makefile.lnx
+  
+***Mac***:
+* cd src/HexRaysCodeXplorer/
+* IDA_DIR=<PATH_TO_IDA> IDA_SDK=<PATH_TO_IDA_SDK> make -f makefile.mac
+* The Mac makefile might need some hand editing, pull requests welcome!
+* IDA 7.0 `.pmc` file extension should be `.dylib`
+* bash$ `export IDA_DIR="/Applications/IDA\ Pro\ 7.0/ida.app/Contents/MacOS" && export IDA_SDK="/Applications/IDA\ Pro\ 7.0/ida.app/Contents/MacOS/idasdk" && make -f makefile7.mac`
+* Or open project in Xcode `HexRaysCodeXplorer.xcodeproj`
 
 ============================================================================
 

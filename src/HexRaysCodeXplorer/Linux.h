@@ -24,9 +24,8 @@
 
 #pragma once
 
-#ifdef __LINUX__
+#if defined (__LINUX__) || defined (__MAC__)
 
-#pragma GCC diagnostic ignored "-fpermissive"
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #include <stdint.h>
@@ -39,8 +38,8 @@
 #define BOOL bool
 #define TRUE true
 #define FALSE false
-#define LPCSTR char *const
-#define LPCTSTR char *const
+#define LPCSTR const char *
+#define LPCTSTR const char *
 #define LPSTR char *
 #define WORD uint16_t
 #define DWORD uint32_t
